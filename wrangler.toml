@@ -1,0 +1,9 @@
+name = "hono-frontend"
+main = "index.js"
+compatibility_date = "2023-01-01"
+
+[build]
+command = "npm run build"
+
+[site]
+bucket = "./public"
