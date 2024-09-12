@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { serveStatic } from '@hono/node-server/serve-static'
+import { serveStatic } from 'hono/cloudflare-workers'
 
 const app = new Hono()
 
@@ -15,7 +15,7 @@ app.get('/', (c) => {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Welcome</title>
-      <link rel="stylesheet" href="/public/styles.css">
+      <link rel="stylesheet" href="public/styles.css">
     </head>
     <body>
       <div class="container">

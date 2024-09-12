@@ -4,15 +4,18 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "node dev.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "wrangler dev",
+    "build": "npm install",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "hono": "^3.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "@hono/node-server": "^1.12.2",
-    "hono": "^4.5.11"
-  }
+  "description": ""
 }

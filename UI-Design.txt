@@ -1,0 +1,6 @@
+- Placeholder Images - https://picsum.photos/
+- Placeholder JSONs
+- Food Information 
+- Date & Time
+- Natural Language Processing
+
