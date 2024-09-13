@@ -12,3 +12,8 @@ bucket = "./public"
 route = "vrsprototype.com/*"
 
 node_compat = true
+
+#[assets]
+#path = "public"
+#include = ["**/*.css"]
+#bucket = "static"
