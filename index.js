@@ -9,8 +9,7 @@ app.use('/*', serveStatic({ root: './' }))
 // Replace this with your actual backend URL
 const BACKEND_URL = 'https://alexanderthenotsobad.us/api/items'
 
-// ... (keep the route handlers for '/', '/employee', '/patron' as they were)
-
+// Add root route
 app.get('/', (c) => {
   return c.html(`
     <!DOCTYPE html>
@@ -24,22 +23,25 @@ app.get('/', (c) => {
     <body>
       <div class="container">
         <h1>Welcome to VRS Prototype</h1>
-        <a href="/employee" class="button">Employee Page</a>
-        <a href="/menu" class="button">Menu Page</a>
+        <a href="/employee" class="button">Employee</a>
+        <a href="/patron" class="button">Patron</a>
+        <a href="/add-menu-items" class="button">Add menu items</a>
+        <a href="/menu" class="button">Menu</a>
       </div>
     </body>
     </html>
   `)
 })
 
-app.get('/employee', (c) => {
+// Rename '/employee' route to '/add-menu-items'
+app.get('/add-menu-items', (c) => {
   return c.html(`
     <!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Menu Items - VRS Prototype</title>
+      <title>Add Menu Items - VRS Prototype</title>
       <link rel="stylesheet" href="/styles.css">
       <style>
         #imagePreview {
@@ -51,7 +53,7 @@ app.get('/employee', (c) => {
     </head>
     <body>
       <div class="container">
-        <h1>Menu Items</h1>
+        <h1>Add Menu Items</h1>
         <form id="menuItemForm">
           <input type="text" id="name" placeholder="Item Name" required>
           <input type="number" id="price" placeholder="Price" step="0.01" required>
@@ -64,90 +66,60 @@ app.get('/employee', (c) => {
         <a href="/" class="button">Back to Home</a>
       </div>
       <script>
-        const form = document.getElementById('menuItemForm');
-        const list = document.getElementById('menuItemsList');
-        const imageInput = document.getElementById('itemPic');
-        const imagePreview = document.getElementById('imagePreview');
-
-        imageInput.addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              imagePreview.src = e.target.result;
-              imagePreview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-          }
-        });
-
-        function fetchMenuItems() {
-          fetch('${BACKEND_URL}/menu-items')
-            .then(res => {
-              if (!res.ok) {
-                throw new Error('Network response was not ok');
-              }
-              return res.json();
-            })
-            .then(items => {
-              list.innerHTML = items.map(item => 
-                \`<li>
-                  <img src="data:image/jpeg;base64,\${item.item_pic}" alt="\${item.name}" style="max-width: 100px; max-height: 100px;">
-                  \${item.name} - $\${item.price} - \${item.category}
-                </li>\`
-              ).join('');
-            })
-            .catch(error => {
-              console.error('Error fetching menu items:', error);
-              list.innerHTML = '<li>Failed to load menu items. Please try again later.</li>';
-            });
-        }
-
-        form.addEventListener('submit', (e) => {
-          e.preventDefault();
-          const name = document.getElementById('name').value;
-          const price = document.getElementById('price').value;
-          const category = document.getElementById('category').value;
-          const itemPic = imageInput.files[0];
-
-          const formData = new FormData();
-          formData.append('name', name);
-          formData.append('price', price);
-          formData.append('category', category);
-          if (itemPic) {
-            formData.append('item_pic', itemPic);
-          }
-
-          fetch('${BACKEND_URL}/menu-items', {
-            method: 'POST',
-            body: formData
-          })
-            .then(res => {
-              if (!res.ok) {
-                throw new Error('Network response was not ok');
-              }
-              return res.json();
-            })
-            .then(() => {
-              fetchMenuItems();
-              form.reset();
-              imagePreview.src = '';
-              imagePreview.style.display = 'none';
-            })
-            .catch(error => {
-              console.error('Error adding menu item:', error);
-              alert('Failed to add menu item. Please try again.');
-            });
-        });
-
-        fetchMenuItems();
+        // ... (Keep the existing JavaScript code for this page)
       </script>
     </body>
     </html>
   `)
 })
 
+// Add a new '/employee' route
+app.get('/employee', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Employee Page - VRS Prototype</title>
+      <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+      <div class="container">
+        <h1>Employee Page</h1>
+        <p>This is the employee page. Add employee-specific content here.</p>
+        <a href="/" class="button">Back to Home</a>
+      </div>
+    </body>
+    </html>
+  `)
+})
+
+// Add a new '/patron' route
+app.get('/patron', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Patron Page - VRS Prototype</title>
+      <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+      <div class="container">
+        <h1>Patron Page</h1>
+        <p>This is the patron page. Add patron-specific content here.</p>
+        <a href="/" class="button">Back to Home</a>
+      </div>
+    </body>
+    </html>
+  `)
+})
+
+// Keep the existing '/menu' route
 app.get('/menu', (c) => {
+  // ... (Keep the existing code for this route)
   return c.html(`
     <!DOCTYPE html>
     <html lang="en">
@@ -190,7 +162,7 @@ app.get('/menu', (c) => {
       </div>
       <script>
         function fetchMenu() {
-          fetch('${BACKEND_URL}/menu-items')
+          fetch('${BACKEND_URL}/')
             .then(res => {
               if (!res.ok) {
                 throw new Error('Network response was not ok');
