@@ -12,6 +12,9 @@
     "hono": "^3.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "eslint": "^9.10.0",
+    "globals": "^15.9.0",
     "wrangler": "^3.0.0"
   },
   "keywords": [],

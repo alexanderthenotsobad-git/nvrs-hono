@@ -6,8 +6,10 @@ const app = new Hono()
 // Serve static files from the 'public' directory
 app.use('/*', serveStatic({ root: './' }))
 
+app.fire({ port:8787 });
+
 // Replace this with your actual backend URL
-const BACKEND_URL = 'https://alexanderthenotsobad.us/api/items'
+//const BACKEND_URL = 'https://alexanderthenotsobad.us/api/items'
 
 // Add root route
 app.get('/', (c) => {
@@ -66,7 +68,31 @@ app.get('/add-menu-items', (c) => {
         <a href="/" class="button">Back to Home</a>
       </div>
       <script>
-        // ... (Keep the existing JavaScript code for this page)
+      // Dechare backend url
+       // const BACKEND_URL = 'https://alexanderthenotsobad.us/api/items'; // Ensure this is properly defined
+
+const fetchData = async () => {
+  try {
+    const response = await fetch(BACKEND_URL, { // No need for template literals unless you're adding variables to the URL
+      method: 'POST', // Specify the request method
+      headers: {
+        'Content-Type': 'application/json', // Ensure the backend knows the data format
+      },
+      body: JSON.stringify(formData), // Convert formData object to JSON
+    });
+
+
+
+    const data = await response.json();
+    console.log('Success:', data);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+// Call the function to post data
+fetchData();
+
       </script>
     </body>
     </html>
@@ -119,7 +145,6 @@ app.get('/patron', (c) => {
 
 // Keep the existing '/menu' route
 app.get('/menu', (c) => {
-  // ... (Keep the existing code for this route)
   return c.html(`
     <!DOCTYPE html>
     <html lang="en">
@@ -161,57 +186,84 @@ app.get('/menu', (c) => {
         <a href="/" class="button">Back to Home</a>
       </div>
       <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          fetchMenu();
+        });
+
         function fetchMenu() {
-          fetch('${BACKEND_URL}/')
-            .then(res => {
-              if (!res.ok) {
+          const menuContainer = document.getElementById('menuContainer');
+
+          fetch("https://alexanderthenotsobad.us/api/items/items")
+            .then(response => {
+              if (!response.ok) {
                 throw new Error('Network response was not ok');
               }
-              return res.json();
+              return response.json();
             })
-            .then(items => {
-              const menuContainer = document.getElementById('menuContainer');
-              const categories = {};
-              
-              items.forEach(item => {
-                if (!categories[item.category]) {
-                  categories[item.category] = [];
-                }
-                categories[item.category].push(item);
-              });
-              
-              for (const [category, categoryItems] of Object.entries(categories)) {
-                const categoryElement = document.createElement('div');
-                categoryElement.className = 'menu-category';
-                categoryElement.innerHTML = \`<h2>\${category}</h2>\`;
-                
-                categoryItems.forEach(item => {
-                  const itemElement = document.createElement('div');
-                  itemElement.className = 'menu-item';
-                  itemElement.innerHTML = \`
-                    <img src="data:image/jpeg;base64,\${item.item_pic}" alt="\${item.name}">
-                    <div>
-                      <h3>\${item.name}</h3>
-                      <p>Price: $\${item.price}</p>
-                    </div>
-                  \`;
-                  categoryElement.appendChild(itemElement);
-                });
-                
-                menuContainer.appendChild(categoryElement);
-              }
+            .then(data => {
+              const items = data.item.flat(); // Flatten array if necessary
+
+              // Clear the container before appending new content
+              menuContainer.innerHTML = '';
+
+              // Organize items by category
+              const categories = groupItemsByCategory(items);
+
+              // Display each category with its items
+              displayCategories(categories, menuContainer);
             })
             .catch(error => {
-              console.error('Error fetching menu items:', error);
-              menuContainer.innerHTML = '<p>Failed to load menu. Please try again later.</p>';
+              console.error('Error fetching menu:', error);
             });
         }
 
-        fetchMenu();
+        function groupItemsByCategory(items) {
+          return items.reduce((acc, item) => {
+            acc[item.category] = acc[item.category] || [];
+            acc[item.category].push(item);
+            return acc;
+          }, {});
+        }
+
+        function displayCategories(categories, container) {
+          Object.entries(categories).forEach(([category, categoryItems]) => {
+            const categoryElement = document.createElement('div');
+            categoryElement.className = 'menu-category';
+            categoryElement.innerHTML = '<h2>' + category + '</h2>';
+
+            // Append each item to the category
+            categoryItems.forEach((item) => {
+              const itemElement = createMenuItemElement(item);
+              categoryElement.appendChild(itemElement);
+            });
+
+            container.appendChild(categoryElement);
+          });
+        }
+
+        function createMenuItemElement(item) {
+          const itemElement = document.createElement('div');
+          itemElement.className = 'menu-item';
+
+          // Use concatenation instead of back ticks
+          itemElement.innerHTML = '<img src="data:image/jpeg;base64,' + item.item_pic + '" alt="' + item.item_name + '">' +
+            '<div>' +
+            '<h3>' + item.item_name + '</h3>' +
+            '<p>' + item.item_desc + '</p>' +
+            '<p>Price: $' + item.price + '</p>' +
+            '</div>';
+          
+          return itemElement;
+        }
       </script>
     </body>
     </html>
-  `)
-})
+  `);
+});
+
+
+
+
+     
 
 export default app
