@@ -69,7 +69,7 @@ app.get('/add-menu-items', (c) => {
       </div>
       <script>
       // Dechare backend url
-       // const BACKEND_URL = 'https://alexanderthenotsobad.us/api/items'; // Ensure this is properly defined
+        const BACKEND_URL = 'https://alexanderthenotsobad.us/api/items/create/'; // Ensure this is properly defined
 
 const fetchData = async () => {
   try {
