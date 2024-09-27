@@ -6,7 +6,7 @@ const app = new Hono()
 // Serve static files from the 'public' directory
 app.use('/*', serveStatic({ root: './' }))
 
-app.fire({ port:8787 });
+//app.fire({ port:8787 });
 
 // Replace this with your actual backend URL
 //const BACKEND_URL = 'https://alexanderthenotsobad.us/api/items'
@@ -260,10 +260,5 @@ app.get('/menu', (c) => {
     </html>
   `);
 });
-
-
-
-
-     
 
 export default app
