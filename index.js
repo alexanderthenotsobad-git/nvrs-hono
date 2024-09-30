@@ -33,7 +33,7 @@ app.get('/', (c) => {
     </body>
     </html>
   `)
-})
+});
 
 // Rename '/employee' route to '/add-menu-items'
 app.get('/add-menu-items', (c) => {
@@ -57,9 +57,9 @@ app.get('/add-menu-items', (c) => {
       <div class="container">
         <h1>Add Menu Items</h1>
         <form id="menuItemForm">
-          <input type="text" id="name" placeholder="Item Name" required>
-          <input type="number" id="price" placeholder="Price" step="0.01" required>
-          <input type="text" id="category" placeholder="Category" required>
+          <input type="text" id="itemName" placeholder="Item Name" required>
+          <input type="text" id="itemDesc" placeholder="Description" required>
+          <input type="number" id="itemPrice" placeholder="Price" step="0.01" required>
           <input type="file" id="itemPic" accept="image/*">
           <img id="imagePreview" src="" alt="Image preview" style="display: none;">
           <button type="submit">Add Item</button>
@@ -68,58 +68,84 @@ app.get('/add-menu-items', (c) => {
         <a href="/" class="button">Back to Home</a>
       </div>
       <script>
-      // Dechare backend url
-        const BACKEND_URL = 'https://alexanderthenotsobad.us/api/items/create/'; // Ensure this is properly defined
+        // Declare backend url
+        const BACKEND_URL = 'https://alexanderthenotsobad.us/api/items/create/'; 
+        
+        const form = document.getElementById("menuItemForm");
+        const imageInput = document.getElementById("itemPic");
+        const imagePreview = document.getElementById("imagePreview");
 
-const fetchData = async () => {
-  try {
-    const response = await fetch(BACKEND_URL, { // No need for template literals unless you're adding variables to the URL
-      method: 'POST', // Specify the request method
-      headers: {
-        'Content-Type': 'application/json', // Ensure the backend knows the data format
-      },
-      body: JSON.stringify(formData), // Convert formData object to JSON
-    });
+        // Image preview functionality
+        imageInput.addEventListener("change", function() {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              imagePreview.src = e.target.result;
+              imagePreview.style.display = "block";
+            }
+            reader.readAsDataURL(file);
+          }
+        });
 
+        form.addEventListener("submit", async function(e) {
+          e.preventDefault();  // Prevent the default form submission
 
+          const item_name = document.getElementById("itemName").value;
+          const item_desc = document.getElementById("itemDesc").value;
+          const item_price = document.getElementById("itemPrice").value;
 
-    const data = await response.json();
-    console.log('Success:', data);
-  } catch (error) {
-    console.error('Error:', error);
-  }
-};
+          const jsonItems = {
+            item_name: item_name,
+            item_desc: item_desc,
+            price: parseFloat(item_price)
+          };
 
-// Call the function to post data
-fetchData();
+          console.log(jsonItems);
+        
+          try {
+            const response = await fetch(BACKEND_URL, {
+              method: 'POST', 
+              headers: {
+                'Content-Type': 'application/json', 
+              },
+              body: JSON.stringify(jsonItems)
+            });
 
+            const data = await response.json();
+            console.log('Success:', data);
+            // You might want to update the UI here to show the new item
+            // or clear the form fields
+          } catch (error) {
+            console.error('Error:', error);
+          }
+        });
       </script>
     </body>
     </html>
   `)
-})
-
-// Add a new '/employee' route
-app.get('/employee', (c) => {
-  return c.html(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Employee Page - VRS Prototype</title>
-      <link rel="stylesheet" href="/styles.css">
-    </head>
-    <body>
-      <div class="container">
-        <h1>Employee Page</h1>
-        <p>This is the employee page. Add employee-specific content here.</p>
-        <a href="/" class="button">Back to Home</a>
-      </div>
-    </body>
-    </html>
-  `)
-})
+});
+        // Add a new '/employee' route
+        app.get('/employee', (c) => {
+          return c.html(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Employee Page - VRS Prototype</title>
+              <link rel="stylesheet" href="/styles.css">
+            </head>
+            <body>
+              <div class="container">
+                <h1>Employee Page</h1>
+                <p>This is the employee page. Add employee-specific content here.</p>
+                <a href="/" class="button">Back to Home</a>
+              </div>
+            </body>
+            </html>
+          `)
+        });
 
 // Add a new '/patron' route
 app.get('/patron', (c) => {
@@ -141,7 +167,7 @@ app.get('/patron', (c) => {
     </body>
     </html>
   `)
-})
+});
 
 // Keep the existing '/menu' route
 app.get('/menu', (c) => {

@@ -46,29 +46,56 @@ app.get('/add-menu-items', (c) => {
       </div>
       <script>
         const form = document.getElementById('menuItemForm');
-        const itemPicInput = document.getElementById('item_pic');
-        const imagePreview = document.getElementById('imagePreview');
+        const itemName = document.getElementById('item_name').value;
 
-        itemPicInput.addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              imagePreview.src = e.target.result;
-              imagePreview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-          }
-        });
+        //const itemPicInput = document.getElementById('item_pic');
+        const imagePreview = document.getElementById('imagePreview');
+        const itemDesc = document.getElementById('item_desc').value;
+        const price = document.getElementById('price').value;
+        const itemPic = document.getElementById('item_pic').files[0];
+
+        const items = {
+        item_name: itemName,
+        item_desc: itemDesc,
+        price: parseFloat(price)
+        };
+
+        // itemPicInput.addEventListener('change', (e) => {
+        //   const file = e.target.files[0];
+        //   if (file) {
+        //     const reader = new FileReader();
+        //     reader.onload = (e) => {
+        //       imagePreview.src = e.target.result;
+        //       imagePreview.style.display = 'block';
+        //     };
+        //     reader.readAsDataURL(file);
+        //   }
+        // });
+
+        // If there's an image, convert it to base64
+        if (itemPic) {
+          const reader = new FileReader();
+          reader.onload = async (e) => {
+            jsonData.item_pic = e.target.result;
+            await sendData(jsonData);
+          };
+          reader.readAsDataURL(itemPic);
+        } else {
+          await sendData(jsonData);
+        }
+      });
 
         form.addEventListener('submit', async (e) => {
           e.preventDefault();
           const formData = new FormData(form);
           
           try {
-            const response = await fetch('${BACKEND_URL}/create', {
+            const response = await fetch('https://alexanderthenotsobad.us/api/items/create', {
               method: 'POST',
-              body: formData
+              headers: {
+                'Content-Type':'application/json'
+              },
+              body: JSON.stringify(jsonData)
             });
             
             if (response.ok) {
@@ -134,12 +161,12 @@ app.get('/menu', (c) => {
               items.forEach(item => {
                 const itemElement = document.createElement('div');
                 itemElement.className = 'menu-item';
-                itemElement.innerHTML = \`
-                  <h3>\${item.item_name}</h3>
-                  <p>\${item.item_desc}</p>
-                  <p>Price: $\${item.price.toFixed(2)}</p>
-                  \${item.item_pic ? \`<img src="data:image/jpeg;base64,\${item.item_pic}" alt="\${item.item_name}">\` : ''}
-                \`;
+                itemElement.innerHTML = "
+                  <h3>+item.item_name+</h3>
+                  <p>+item.item_desc+</p>
+                  <p>Price: +{item.price.toFixed(2)+</p>
+                  +{item.item_pic ? , <img src="data:image/jpeg;base64, {item.item_pic}" alt="+{item.item_name}">\` : ''}
+                ";
                 menuContainer.appendChild(itemElement);
               });
             })
