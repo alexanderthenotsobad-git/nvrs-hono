@@ -116,6 +116,7 @@ app.get('/add-menu-items', (c) => {
             console.log('Success:', data);
             // You might want to update the UI here to show the new item
             // or clear the form fields
+            alert("Your entries have been entered" + JSON.stringify(jsonItems));
           } catch (error) {
             console.error('Error:', error);
           }
